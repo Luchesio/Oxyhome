@@ -1,0 +1,136 @@
+
+
+// auth.component.scss
+
+$primary-color: #667eea;
+$primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+.auth-wrapper {
+  // FIXED: Forces the container to be exactly the screen size
+  position: fixed; 
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  
+  // FIXED: Ensures padding doesn't add to the width/height
+  box-sizing: border-box; 
+  
+  // Background Image Logic
+  background-image: url('../../assets/authback.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  
+  // Centering Logic
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  // Use padding to stop the card touching edges on small screens
+  padding: 20px; 
+}
+
+.auth-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1;
+}
+
+.auth-card {
+  position: relative;
+  z-index: 2;
+  background: white;
+  width: 100%;
+  max-width: 400px; /* Reduced slightly to look sharper */
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  
+  // FIXED: Ensures the card never grows taller than the screen
+  max-height: 90vh; 
+  overflow-y: auto; // Only the card scrolls if the screen is tiny (mobile landscape)
+  
+  // Hide scrollbar inside the card for a clean look
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+  }
+
+  .auth-header {
+    text-align: center;
+    margin-bottom: 25px;
+
+    h2 {
+      margin: 0;
+      color: #333;
+      font-size: 1.8rem;
+    }
+    p {
+      margin-top: 5px;
+      color: #666;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+.form-group {
+  margin-bottom: 15px;
+
+  label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #444;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    box-sizing: border-box; /* Critical for preventing width overflow */
+    
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+    }
+  }
+}
+
+.primary-btn {
+  width: 100%;
+  padding: 12px;
+  background: $primary-gradient;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.auth-footer {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 0.9rem;
+  
+  a {
+    color: $primary-color;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+  }
+}
