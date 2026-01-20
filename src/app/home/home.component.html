@@ -1,77 +1,38 @@
-<nav class="navbar">
-  <div class="container nav-wrapper">
-    <div class="logo">
-      <i class="fas fa-bolt"></i>
-      <span>HomeFlex</span>
-    </div>
-    <div class="nav-links">
-      <a href="#how">How it Works</a>
-      <a href="#products">Appliances</a>
-      <button class="login-btn">Log In</button>
-    </div>
-  </div>
-</nav>
-
-<header class="hero">
-  <div class="container hero-grid">
-    <div class="hero-content">
-      <span class="badge">0% Interest Options</span>
-      <h1>
-        Upgrade Your Home. <span class="highlight">Pay at Your Pace.</span>
-      </h1>
-      <p>
-        Premium appliances delivered today. Small monthly payments that fit your
-        budget.
-      </p>
-      <div class="cta-group">
-        <button class="btn-primary">View Products</button>
-        <button class="btn-outline">How it Works</button>
+<div class="home-wrapper">
+  <nav class="navbar">
+    <div class="container2 nav-wrapper">
+      <div class="logo">
+        <img src="assets/logo.png" alt="Logo" />
+      </div>
+      <div class="nav-links">
+        <a href="">How it Works</a>
+        <button class="btn-primary" (click)="goToAuth()">Log In</button>
       </div>
     </div>
-    <div class="hero-visual">
-      <img
-        src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80"
-        alt="Modern Kitchen"
-      />
-    </div>
-  </div>
-</header>
+  </nav>
 
-<section id="products" class="products">
-  <div class="container">
-    <div class="section-header">
-      <h2>Featured Appliances</h2>
-    </div>
-    <div class="product-grid">
-      <article class="product-card" *ngFor="let item of appliances">
-        <div class="img-container">
-          <img [src]="item.image" [alt]="item.name" />
+  <header class="hero">
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <span class="badge">0% Interest Options</span>
+        <h1>
+          Upgrade Your Home. <span class="highlight">Pay at Your Pace.</span>
+        </h1>
+        <p>
+          Premium appliances delivered today. Small monthly payments that fit
+          your budget.
+        </p>
+        <div class="cta-group">
+          <button class="btn-primary" (click)="goToAuth()">Apply Now</button>
+          <!-- <button class="btn-outline">How it Works</button> -->
         </div>
-        <div class="card-body">
-          <h3>{{ item.name }}</h3>
-          <div class="pricing-box">
-            <span class="label">INSTALLMENT PLAN</span>
-            <div class="price">
-              <span class="currency">$</span>
-              <span class="amount">{{ item.monthlyPrice }}</span>
-              <span class="period">/ mo</span>
-            </div>
-            <p class="terms">For {{ item.duration }} months</p>
-          </div>
-          <button class="btn-card">View Plan</button>
-        </div>
-      </article>
+      </div>
+      <div class="hero-visual">
+        <img
+          src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80"
+          alt="Modern Kitchen"
+        />
+      </div>
     </div>
-  </div>
-</section>
-
-<section class="final-cta">
-  <div class="container text-center">
-    <h2>Ready to upgrade your lifestyle?</h2>
-    <p>Join over 10,000 customers enjoying their new appliances today.</p>
-
-    <button class="buy-now-btn">Buy Now</button>
-
-    <p class="fine-print">No credit card required for sign up.</p>
-  </div>
-</section>
+  </header>
+</div>

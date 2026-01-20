@@ -26,13 +26,34 @@
       </div>
       <div class="form-group">
         <label>Password</label>
-        <input
-          type="password"
-          name="loginPassword"
-          [(ngModel)]="loginPassword"
-          placeholder="Enter your password"
-          required
-        />
+        <div style="position: relative; display: flex; align-items: center">
+          <input
+            [type]="showLoginPassword ? 'text' : 'password'"
+            name="loginPassword"
+            [(ngModel)]="loginPassword"
+            placeholder="Enter your password"
+            required
+            style="flex: 1"
+          />
+          <button
+            type="button"
+            (click)="showLoginPassword = !showLoginPassword"
+            style="
+              position: absolute;
+              right: 8px;
+              background: none;
+              border: none;
+              cursor: pointer;
+              font-size: 1.1em;
+              color: #888;
+            "
+            tabindex="-1"
+            aria-label="Toggle password visibility"
+          >
+            <span *ngIf="!showLoginPassword">👁️</span>
+            <span *ngIf="showLoginPassword">🙈</span>
+          </button>
+        </div>
       </div>
       <button type="submit" class="primary-btn">Login</button>
     </form>

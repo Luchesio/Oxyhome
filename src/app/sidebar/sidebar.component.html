@@ -1,1 +1,38 @@
-<p>sidebar works!</p>
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">
+      <img src="assets/logo.png" alt="Logo" />
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a
+      *ngFor="let item of menuItems"
+      [routerLink]="item.route"
+      routerLinkActive="active"
+      class="nav-item"
+      [class.has-badge]="item.badge"
+    >
+      <i class="nav-icon" [innerHTML]="item.icon"></i>
+      <span class="nav-text">{{ item.label }}</span>
+      <span *ngIf="item.badge" class="badge">{{ item.badge }}</span>
+    </a>
+
+    <div class="sidebar-footer">
+      <button class="nav-item logout-btn" (click)="logout()">
+        <i class="nav-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path
+              d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"
+            />
+          </svg>
+        </i>
+        <span class="nav-text">Logout</span>
+      </button>
+    </div>
+  </nav>
+</aside>

@@ -1,0 +1,457 @@
+.dashboard {
+  min-height: 100vh;
+  background: #f5f7fa;
+  margin-left: 280px;
+  padding: 24px 40px;
+
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+
+    .page-title {
+      font-size: 28px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin: 0;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      .notification-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        border: none;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+
+        svg {
+          width: 22px;
+          height: 22px;
+          fill: #64748b;
+        }
+
+        &.has-notification::after {
+          content: '';
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          width: 8px;
+          height: 8px;
+          background: #ff6b6b;
+          border-radius: 50%;
+          border: 2px solid #ffffff;
+        }
+
+        &:hover {
+          background: #f8fafc;
+        }
+      }
+
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #ffffff;
+        padding: 6px 12px 6px 6px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+          background: #f8fafc;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .avatar {
+          width: 36px;
+          height: 36px;
+          border-radius: 10px;
+          object-fit: cover;
+        }
+
+        .user-name {
+          font-size: 14px;
+          font-weight: 600;
+          color: #1a1a1a;
+          max-width: 150px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .dropdown-toggle {
+          border: none;
+          background: transparent;
+          padding: 0;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+
+          svg {
+            width: 20px;
+            height: 20px;
+            fill: #64748b;
+          }
+        }
+      }
+    }
+  }
+
+  .dashboard-content {
+    .cards-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 32px;
+
+      .card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+        .card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+
+          .card-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #64748b;
+            margin: 0;
+          }
+
+          .icon-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            svg {
+              width: 18px;
+              height: 18px;
+              fill: #94a3b8;
+            }
+          }
+        }
+
+        .card-subtitle {
+          font-size: 14px;
+          color: #94a3b8;
+          margin: 8px 0 0;
+        }
+      }
+
+      .wallet-card {
+        .balance-amount {
+          display: flex;
+          align-items: baseline;
+          gap: 8px;
+          margin-bottom: 8px;
+
+          .currency {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+          }
+
+          .amount {
+            font-size: 40px;
+            font-weight: 700;
+            color: #1a1a1a;
+            line-height: 1;
+          }
+
+          .trend-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: #d1fae5;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-left: 8px;
+
+            &.positive {
+              background: #d1fae5;
+
+              svg {
+                fill: #059669;
+              }
+            }
+
+            svg {
+              width: 16px;
+              height: 16px;
+            }
+          }
+        }
+      }
+
+      .bank-card {
+        .bank-info {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          margin-bottom: 24px;
+
+          .bank-icon {
+            width: 48px;
+            height: 48px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            svg {
+              width: 24px;
+              height: 24px;
+              fill: #475569;
+            }
+          }
+
+          .bank-details {
+            .bank-name {
+              font-size: 16px;
+              font-weight: 600;
+              color: #1a1a1a;
+              margin: 0 0 4px;
+            }
+
+            .account-number {
+              font-size: 14px;
+              color: #64748b;
+              margin: 0;
+            }
+          }
+        }
+
+        .btn-primary {
+          width: 100%;
+          padding: 14px;
+          background: #4ade80;
+          border: none;
+          border-radius: 12px;
+          color: #ffffff;
+          font-size: 15px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+
+          &:hover {
+            background: #22c55e;
+          }
+        }
+      }
+    }
+
+    .installments-section {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+      .section-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin: 0 0 24px;
+      }
+
+      .installments-table {
+        .table-header {
+          display: grid;
+          grid-template-columns: 2fr 1fr 1fr;
+          gap: 16px;
+          padding: 12px 16px;
+          background: #f8fafc;
+          border-radius: 8px;
+          margin-bottom: 8px;
+
+          div {
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+        }
+
+        .table-body {
+          .table-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 16px;
+            padding: 16px;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.2s;
+
+            &:last-child {
+              border-bottom: none;
+            }
+
+            &:hover {
+              background: #fafbfc;
+            }
+
+            .col-appliance {
+              .appliance-info {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+
+                .appliance-icon {
+                  width: 48px;
+                  height: 48px;
+                  background: #f8fafc;
+                  border-radius: 10px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+
+                  img {
+                    width: 28px;
+                    height: 28px;
+                    object-fit: contain;
+                  }
+                }
+
+                .appliance-details {
+                  .appliance-name {
+                    font-size: 15px;
+                    font-weight: 600;
+                    color: #1a1a1a;
+                    margin: 0 0 4px;
+                  }
+
+                  .due-info {
+                    font-size: 13px;
+                    color: #94a3b8;
+                    margin: 0;
+                  }
+                }
+              }
+            }
+
+            .col-date {
+              display: flex;
+              align-items: center;
+
+              .date-display {
+                font-size: 14px;
+                color: #475569;
+              }
+            }
+
+            .col-amount {
+              display: flex;
+              align-items: center;
+              justify-content: flex-end;
+
+              .amount-info {
+                text-align: right;
+
+                .amount {
+                  font-size: 15px;
+                  font-weight: 600;
+                  color: #1a1a1a;
+                  margin: 0 0 4px;
+                }
+
+                .status-badge {
+                  display: inline-block;
+                  font-size: 12px;
+                  font-weight: 500;
+                  padding: 4px 8px;
+                  border-radius: 6px;
+                  background: #fef3c7;
+                  color: #d97706;
+
+                  &.Due {
+                    background: #fef3c7;
+                    color: #d97706;
+                  }
+
+                  &.Paid {
+                    background: #d1fae5;
+                    color: #059669;
+                  }
+
+                  &.Overdue {
+                    background: #fee2e2;
+                    color: #dc2626;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .dashboard {
+    margin-left: 240px;
+    padding: 20px 24px;
+
+    .dashboard-content {
+      .cards-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    margin-left: 0;
+    padding: 16px;
+
+    .dashboard-header {
+      .header-actions {
+        .user-profile {
+          .user-name {
+            display: none;
+          }
+        }
+      }
+    }
+
+    .installments-section {
+      .installments-table {
+        .table-header,
+        .table-row {
+          grid-template-columns: 1fr;
+          
+          .col-date,
+          .col-amount {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}

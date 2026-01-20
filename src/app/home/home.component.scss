@@ -6,24 +6,73 @@ $text-slate: #64748b;
 $white: #ffffff;
 
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
+  width: 100%;
+ 
+  height: 100%;
+}
+
+
+
+img
+{
+  width: 100%;
+  height: auto;
+}
+.container2
+{
+  // width: 100%;
+ width: 100vw;
+  height: 100%;
+}
+.home-wrapper
+{
+  // FIXED: Forces the container to be exactly the screen size
+  position: fixed; 
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  
+  // FIXED: Ensures padding doesn't add to the width/height
+  box-sizing: border-box;
 }
 
 // Navbar
 .navbar {
-  background: $white;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  position: fixed;
+    position: relative;
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 22px;
+      pointer-events: none;
+       box-shadow: 0 12px 32px 0 rgba(15, 33, 64, 0.45), 0 2px 8px 0 rgba(0,0,0,0.18);
+      border-radius: 0 0 24px 24px;
+      z-index: 99;
+    }
+  background: rgb(15, 33, 64) ;
+  box-shadow: 0 4px 24px 0 rgba(15, 33, 64, 0.18), 0 1.5px 6px 0 rgba(0,0,0,0.10);
+  
+  height: 100px;
   width: 100%;
+  box-sizing: border-box;
+  padding-left: 50px;
+    padding-right: 50px;
+
+
   z-index: 100;
+  // margin-left: 50px;
+  // margin-right: 50px;
   
   .nav-wrapper {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 80px;
+    
+    width: 100%;
+    
   }
 
   .logo {
@@ -38,13 +87,18 @@ $white: #ffffff;
 
   .nav-links {
     display: flex;
-    gap: 2rem;
+    height: 100%;
+    width: 300px;
+    gap: 17px;
     align-items: center;
+    
+    justify-content: flex-end;
+    padding: 10px;
     
     a {
       text-decoration: none;
-      color: $text-slate;
-      font-weight: 500;
+      color: $white;
+      font-weight: 600;
       &:hover { color: $brand-primary; }
     }
   }
@@ -52,15 +106,24 @@ $white: #ffffff;
 
 // Hero Section
 .hero {
-  padding: 160px 0 80px;
-  background: linear-gradient(135deg, $brand-dark 0%, $brand-primary 100%);
+  // padding: 160px 0 80px;
+  background: rgb(15, 33, 64);
+  // padding: 20px;
   color: $white;
+   padding-left: 50px;
+  padding-right: 50px;
+   height: 100%;
+  width: 100%;
+  box-sizing: border-box;
   
   .hero-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 4rem;
+    // width: 100%;
+    // height: 100%;
     align-items: center;
+    justify-content: space-between;
 
     @media (max-width: 768px) {
       grid-template-columns: 1fr;

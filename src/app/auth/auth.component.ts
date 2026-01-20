@@ -22,6 +22,7 @@ export class AuthComponent {
   // Login form fields
   loginEmail: string = '';
   loginPassword: string = '';
+  showLoginPassword: boolean = false;
    isLoginMode = true;
   // API base URL (adjust to your backend URL)
   private apiUrl = 'http://localhost:8000/auth';
