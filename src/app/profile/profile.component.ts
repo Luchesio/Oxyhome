@@ -6,7 +6,8 @@ import { Router } from '@angular/router';
 import { SidebarComponent } from "../sidebar/sidebar.component";
 
 interface UserData {
-  full_name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   phone_number: string;
   created_at?: string;
@@ -23,7 +24,8 @@ export class ProfileComponent implements OnInit {
   private apiUrl = 'http://localhost:8000/auth';
   
   userData: UserData = {
-    full_name: '',
+    first_name: '',
+    last_name: '',
     email: '',
     phone_number: '',
     created_at: '',
@@ -62,7 +64,8 @@ export class ProfileComponent implements OnInit {
     this.http.get<any>(`${this.apiUrl}/me`, { headers }).subscribe(
       response => {
         this.userData = {
-          full_name: response.full_name,
+          first_name: response.first_name,
+          last_name: response.last_name,
           email: response.email,
           phone_number: response.phone_number,
           created_at: response.created_at || new Date().toISOString(),
@@ -102,9 +105,13 @@ export class ProfileComponent implements OnInit {
   }
 
   getInitials(): string {
-    if (!this.userData.full_name) return 'U';
-    const names = this.userData.full_name.split(' ');
-    return names.map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    const firstInitial = this.userData.first_name ? this.userData.first_name[0] : '';
+    const lastInitial = this.userData.last_name ? this.userData.last_name[0] : '';
+    return (firstInitial + lastInitial).toUpperCase() || 'U';
+  }
+
+  getFullName(): string {
+    return `${this.userData.first_name} ${this.userData.last_name}`.trim();
   }
 
   getMemberSince(): string {

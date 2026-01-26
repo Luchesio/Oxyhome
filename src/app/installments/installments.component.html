@@ -1,1 +1,272 @@
 <app-sidebar></app-sidebar>
+
+<div class="installments">
+  <header class="installments-header">
+    <h1 class="page-title">Create Installment Invoice</h1>
+    <p class="page-subtitle">
+      Set up your payment plan with flexible installment options
+    </p>
+  </header>
+
+  <div class="installments-content">
+    <div class="form-container">
+      <form class="installment-form" (ngSubmit)="submitInvoice()">
+        <!-- Account Details Section -->
+        <div class="form-section">
+          <h2 class="section-title">Account Details</h2>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="bankSelect" class="form-label">Select Bank</label>
+              <select
+                id="bankSelect"
+                [(ngModel)]="selectedBankCode"
+                name="bankCode"
+                class="form-control"
+                required
+              >
+                <option value="" disabled selected>Choose your bank</option>
+                <option *ngFor="let bank of banks" [value]="bank.code">
+                  {{ bank.name }}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="accountNumber" class="form-label"
+                >Account Number</label
+              >
+              <input
+                type="text"
+                id="accountNumber"
+                [(ngModel)]="accountNumber"
+                name="accountNumber"
+                class="form-control"
+                placeholder="Enter your account number"
+                maxlength="10"
+                pattern="[0-9]{10}"
+                required
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Details Section -->
+        <div class="form-section">
+          <h2 class="section-title">Payment Details</h2>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="amount" class="form-label">Total Amount (₦)</label>
+              <input
+                type="number"
+                id="amount"
+                [(ngModel)]="amount"
+                name="amount"
+                class="form-control"
+                placeholder="Enter total amount"
+                min="1"
+                step="1"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="downPayment" class="form-label"
+                >Down Payment (₦)</label
+              >
+              <input
+                type="number"
+                id="downPayment"
+                [(ngModel)]="downPayment"
+                name="downPayment"
+                class="form-control"
+                placeholder="Enter down payment"
+                min="1"
+                step="1"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="repeatFrequency" class="form-label"
+                >Payment Frequency</label
+              >
+              <select
+                id="repeatFrequency"
+                [(ngModel)]="repeatFrequency"
+                name="repeatFrequency"
+                class="form-control"
+                required
+              >
+                <option value="" disabled selected>
+                  Choose payment frequency
+                </option>
+                <option
+                  *ngFor="let freq of repeatFrequencies"
+                  [value]="freq.value"
+                >
+                  {{ freq.label }}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Estimated Payments Left</label>
+              <div class="info-display">
+                <span class="info-value">
+                  {{ amount && downPayment ? calculateNumberOfPayments() : 0 }}
+                </span>
+                <span class="info-text">payments</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customer Information Display -->
+        <div class="form-section" *ngIf="userProfile">
+          <h2 class="section-title">Customer Information</h2>
+
+          <div class="customer-info-grid">
+            <div class="info-item">
+              <span class="info-label">Name</span>
+              <span class="info-value"
+                >{{ userProfile.first_name }} {{ userProfile.last_name }}</span
+              >
+            </div>
+            <div class="info-item">
+              <span class="info-label">Email</span>
+              <span class="info-value">{{ userProfile.email }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Phone Number</span>
+              <span class="info-value">{{ userProfile.phone_number }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn-secondary"
+            (click)="resetForm()"
+            [disabled]="isLoading"
+          >
+            Reset Form
+          </button>
+          <button
+            type="submit"
+            class="btn-primary"
+            [disabled]="!isFormValid() || isLoading"
+          >
+            <span *ngIf="!isLoading">Send Invoice</span>
+            <span *ngIf="isLoading" class="loading-spinner">
+              <svg class="spinner" viewBox="0 0 24 24">
+                <circle
+                  class="spinner-circle"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke-width="3"
+                  fill="none"
+                />
+              </svg>
+              Processing...
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Response Modal -->
+  <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">Invoice Response</h2>
+        <button class="modal-close" (click)="closeModal()">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path
+              d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="message-section">
+          <div class="message-icon">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+            </svg>
+          </div>
+          <p class="message-text">{{ modalMessage }}</p>
+        </div>
+
+        <div class="meta-section" *ngIf="modalMeta">
+          <h3 class="meta-title">Payment Details</h3>
+          <div class="meta-grid">
+            <div class="meta-item">
+              <span class="meta-label">Payment ID</span>
+              <span class="meta-value">{{ modalMeta.payment_id }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Virtual Account Name</span>
+              <span class="meta-value">{{
+                modalMeta.virtual_account_name
+              }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Virtual Account Number</span>
+              <span class="meta-value highlight">{{
+                modalMeta.virtual_account_number
+              }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Bank Name</span>
+              <span class="meta-value">{{
+                modalMeta.virtual_account_bank_name
+              }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Bank Code</span>
+              <span class="meta-value">{{
+                modalMeta.virtual_account_bank_code
+              }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Status</span>
+              <span
+                class="meta-value status"
+                [class.active]="modalMeta.virtual_account_status === 'active'"
+              >
+                {{ modalMeta.virtual_account_status }}
+              </span>
+            </div>
+            <div class="meta-item full-width">
+              <span class="meta-label">Expiry Date</span>
+              <span class="meta-value">{{
+                modalMeta.virtual_account_expiry_date
+              }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-primary" (click)="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

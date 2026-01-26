@@ -107,8 +107,9 @@ export class DashboardComponent implements OnInit {
 
     this.http.get<any>(`${this.apiUrl}/me`, { headers }).subscribe(
       response => {
+        // Only use first_name for display
         this.userProfile = {
-          name: response.full_name || 'User',
+          name: response.first_name || 'User',
           avatar: this.userProfile.avatar,
           email: response.email
         };

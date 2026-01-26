@@ -100,7 +100,7 @@ $primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     
     &:focus {
       outline: none;
-      border-color: $primary-color;
+      border-color: #10b981;
     }
   }
 }
@@ -108,7 +108,7 @@ $primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 .primary-btn {
   width: 100%;
   padding: 12px;
-  background: $primary-gradient;
+  background: #10b981;
   color: white;
   border: none;
   border-radius: 6px;
@@ -128,7 +128,7 @@ $primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   font-size: 0.9rem;
   
   a {
-    color: $primary-color;
+    color: #10b981;
     font-weight: bold;
     cursor: pointer;
     text-decoration: none;

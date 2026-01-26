@@ -30,7 +30,7 @@
           {{ getInitials() }}
         </div>
         <div class="profile-info">
-          <h2 class="user-name">{{ userData.full_name }}</h2>
+          <h2 class="user-name">{{ getFullName() }}</h2>
           <p class="user-email">{{ userData.email }}</p>
           <p class="member-since">Member since {{ getMemberSince() }}</p>
         </div>
@@ -145,14 +145,25 @@
 
       <div class="info-grid">
         <div class="info-item">
-          <label class="info-label">Full Name</label>
+          <label class="info-label">First Name</label>
           <input
             *ngIf="editMode"
             type="text"
-            [(ngModel)]="userData.full_name"
+            [(ngModel)]="userData.first_name"
             class="info-input"
           />
-          <p *ngIf="!editMode" class="info-value">{{ userData.full_name }}</p>
+          <p *ngIf="!editMode" class="info-value">{{ userData.first_name }}</p>
+        </div>
+
+        <div class="info-item">
+          <label class="info-label">Last Name</label>
+          <input
+            *ngIf="editMode"
+            type="text"
+            [(ngModel)]="userData.last_name"
+            class="info-input"
+          />
+          <p *ngIf="!editMode" class="info-value">{{ userData.last_name }}</p>
         </div>
 
         <div class="info-item">

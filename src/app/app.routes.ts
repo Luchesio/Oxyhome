@@ -5,6 +5,7 @@ import { AuthComponent } from './auth/auth.component';
 import { ProfileComponent } from './profile/profile.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { InstallmentsComponent } from './installments/installments.component';
+import { MandatesComponent } from './mandates/mandates.component';
 export const routes: Routes = [
 
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -17,6 +18,8 @@ export const routes: Routes = [
     { path: 'notifications', component: NotificationsComponent },
     { path: 'installments', component: InstallmentsComponent },
 
-    { path: 'dashboard', component: DashboardComponent }
+    { path: 'dashboard', component: DashboardComponent },
+
+    { path: 'mandates', component: MandatesComponent }
 
 ];

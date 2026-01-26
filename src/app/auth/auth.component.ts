@@ -1,14 +1,12 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-
 import { CommonModule } from '@angular/common';
-
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-auth',
-  imports: [FormsModule,CommonModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './auth.component.html',
   styleUrl: './auth.component.scss'
 })
@@ -16,25 +14,45 @@ export class AuthComponent {
   // Signup form fields
   signupEmail: string = '';
   signupPassword: string = '';
+  signupConfirmPassword: string = '';
   signupPhoneNumber: string = '';
-  signupFullName: string = '';
+  signupFirstName: string = '';
+  signupLastName: string = '';
 
   // Login form fields
   loginEmail: string = '';
   loginPassword: string = '';
   showLoginPassword: boolean = false;
-   isLoginMode = true;
+  showSignupPassword: boolean = false;
+  showConfirmPassword: boolean = false;
+  isLoginMode = true;
+
   // API base URL (adjust to your backend URL)
   private apiUrl = 'http://localhost:8000/auth';
 
   constructor(private http: HttpClient, private router: Router) {}
 
   onSignup() {
+    // Validate password match on frontend
+    if (this.signupPassword !== this.signupConfirmPassword) {
+      alert('Passwords do not match!');
+      return;
+    }
+
+    // Validate phone number format
+    const phonePattern = /^0[7-9][0-1]\d{8}$/;
+    if (!phonePattern.test(this.signupPhoneNumber)) {
+      alert('Phone number must be in format: 09056035245 (11 digits starting with 070-091)');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('email', this.signupEmail);
     formData.append('password', this.signupPassword);
+    formData.append('confirm_password', this.signupConfirmPassword);
     formData.append('phone_number', this.signupPhoneNumber);
-    formData.append('full_name', this.signupFullName);
+    formData.append('first_name', this.signupFirstName);
+    formData.append('last_name', this.signupLastName);
 
     this.http.post(`${this.apiUrl}/signup`, formData).subscribe(
       response => {
@@ -52,6 +70,27 @@ export class AuthComponent {
 
   onSwitchMode() {
     this.isLoginMode = !this.isLoginMode;
+    // Clear form fields when switching modes
+    this.clearForms();
+  }
+
+  clearForms() {
+    // Clear signup fields
+    this.signupEmail = '';
+    this.signupPassword = '';
+    this.signupConfirmPassword = '';
+    this.signupPhoneNumber = '';
+    this.signupFirstName = '';
+    this.signupLastName = '';
+
+    // Clear login fields
+    this.loginEmail = '';
+    this.loginPassword = '';
+
+    // Reset password visibility
+    this.showLoginPassword = false;
+    this.showSignupPassword = false;
+    this.showConfirmPassword = false;
   }
 
   autoLoginAfterSignup(email: string, password: string) {
