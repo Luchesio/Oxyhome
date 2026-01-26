@@ -1,0 +1,150 @@
+<app-sidebar></app-sidebar>
+
+<div class="mandates">
+  <header class="mandates-header">
+    <div class="header-content">
+      <h1 class="page-title">Active Mandates</h1>
+      <p class="page-subtitle">
+        View all your active payment mandates across different banks
+      </p>
+    </div>
+    <button
+      class="btn-refresh"
+      (click)="refreshMandates()"
+      [disabled]="isLoading"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+      >
+        <path
+          d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"
+        />
+      </svg>
+      Refresh
+    </button>
+  </header>
+
+  <div class="mandates-content">
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="isLoading">
+      <div class="loading-spinner">
+        <svg class="spinner" viewBox="0 0 24 24">
+          <circle
+            class="spinner-circle"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke-width="3"
+            fill="none"
+          />
+        </svg>
+        <p class="loading-text">Loading your mandates...</p>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div class="error-container" *ngIf="!isLoading && errorMessage">
+      <div class="error-icon">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+          />
+        </svg>
+      </div>
+      <p class="error-message">{{ errorMessage }}</p>
+      <button class="btn-retry" (click)="refreshMandates()">Try Again</button>
+    </div>
+
+    <!-- Empty State -->
+    <div
+      class="empty-container"
+      *ngIf="!isLoading && !errorMessage && accounts.length === 0"
+    >
+      <div class="empty-icon">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"
+          />
+        </svg>
+      </div>
+      <p class="empty-message">No active mandates found</p>
+      <p class="empty-subtitle">
+        You don't have any active payment mandates at the moment
+      </p>
+    </div>
+
+    <!-- Mandates Grid -->
+    <div
+      class="mandates-grid"
+      *ngIf="!isLoading && !errorMessage && accounts.length > 0"
+    >
+      <div class="mandate-card" *ngFor="let account of accounts">
+        <div class="mandate-header">
+          <div class="bank-icon">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M4 10v7h3v-7H4zm6 0v7h3v-7h-3zM2 22h19v-3H2v3zm14-12v7h3v-7h-3zm-4.5-9L2 6v2h19V6l-9.5-5z"
+              />
+            </svg>
+          </div>
+          <div
+            class="status-badge"
+            [ngClass]="getStatusClass(account.extended_data.mandate_status)"
+          >
+            {{ account.extended_data.mandate_status }}
+          </div>
+        </div>
+
+        <div class="mandate-body">
+          <div class="info-group">
+            <span class="info-label">Account Name</span>
+            <span class="info-value">{{ account.account_name }}</span>
+          </div>
+
+          <div class="info-group">
+            <span class="info-label">Account Number</span>
+            <span class="info-value highlight">{{
+              account.account_number
+            }}</span>
+          </div>
+
+          <div class="info-group">
+            <span class="info-label">Bank Name</span>
+            <span class="info-value">{{ account.bank_name }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div
+      class="mandates-summary"
+      *ngIf="!isLoading && !errorMessage && accounts.length > 0"
+    >
+      <div class="summary-item">
+        <span class="summary-label">Total Mandates</span>
+        <span class="summary-value">{{ accounts.length }}</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Active Mandates</span>
+        <span class="summary-value active">
+          {{ getActiveMandatesCount() }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

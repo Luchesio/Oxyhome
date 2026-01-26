@@ -1,0 +1,244 @@
+<app-sidebar></app-sidebar>
+
+<div class="profile-container">
+  <div class="profile-header">
+    <button class="back-btn" (click)="goToDashboard()">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+      >
+        <path
+          d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
+        />
+      </svg>
+      Back to Dashboard
+    </button>
+    <h1 class="page-title">Profile Settings</h1>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading profile...</p>
+  </div>
+
+  <div *ngIf="!isLoading" class="profile-content">
+    <!-- Profile Overview Card -->
+    <div class="profile-card main-card">
+      <div class="profile-avatar-section">
+        <div class="avatar-circle">
+          {{ getInitials() }}
+        </div>
+        <div class="profile-info">
+          <h2 class="user-name">{{ getFullName() }}</h2>
+          <p class="user-email">{{ userData.email }}</p>
+          <p class="member-since">Member since {{ getMemberSince() }}</p>
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <button class="btn-secondary" (click)="toggleEditMode()">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path
+              d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+            />
+          </svg>
+          {{ editMode ? "Cancel" : "Edit Profile" }}
+        </button>
+        <button class="btn-danger" (click)="logout()">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path
+              d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"
+            />
+          </svg>
+          Logout
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats Cards Row -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon purchases">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path
+              d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"
+            />
+          </svg>
+        </div>
+        <div class="stat-info">
+          <p class="stat-label">Total Purchases</p>
+          <p class="stat-value">{{ profileStats.totalPurchases }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon active-plans">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path
+              d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"
+            />
+          </svg>
+        </div>
+        <div class="stat-info">
+          <p class="stat-label">Active Plans</p>
+          <p class="stat-value">{{ profileStats.activePlans }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon completed">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
+          </svg>
+        </div>
+        <div class="stat-info">
+          <p class="stat-label">Completed Payments</p>
+          <p class="stat-value">{{ profileStats.completedPayments }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon wallet">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path
+              d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"
+            />
+          </svg>
+        </div>
+        <div class="stat-info">
+          <p class="stat-label">Wallet Balance</p>
+          <p class="stat-value">
+            ₦{{ profileStats.walletBalance | number: "1.2-2" }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Personal Information Card -->
+    <div class="profile-card details-card">
+      <h3 class="section-title">Personal Information</h3>
+
+      <div class="info-grid">
+        <div class="info-item">
+          <label class="info-label">First Name</label>
+          <input
+            *ngIf="editMode"
+            type="text"
+            [(ngModel)]="userData.first_name"
+            class="info-input"
+          />
+          <p *ngIf="!editMode" class="info-value">{{ userData.first_name }}</p>
+        </div>
+
+        <div class="info-item">
+          <label class="info-label">Last Name</label>
+          <input
+            *ngIf="editMode"
+            type="text"
+            [(ngModel)]="userData.last_name"
+            class="info-input"
+          />
+          <p *ngIf="!editMode" class="info-value">{{ userData.last_name }}</p>
+        </div>
+
+        <div class="info-item">
+          <label class="info-label">Email Address</label>
+          <input
+            *ngIf="editMode"
+            type="email"
+            [(ngModel)]="userData.email"
+            class="info-input"
+          />
+          <p *ngIf="!editMode" class="info-value">{{ userData.email }}</p>
+        </div>
+
+        <div class="info-item">
+          <label class="info-label">Phone Number</label>
+          <input
+            *ngIf="editMode"
+            type="tel"
+            [(ngModel)]="userData.phone_number"
+            class="info-input"
+          />
+          <p *ngIf="!editMode" class="info-value">
+            {{ userData.phone_number }}
+          </p>
+        </div>
+
+        <div class="info-item">
+          <label class="info-label">User ID</label>
+          <p class="info-value user-id">{{ userData.user_id }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="editMode" class="save-section">
+        <button class="btn-primary" (click)="saveProfile()">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
+          </svg>
+          Save Changes
+        </button>
+      </div>
+    </div>
+
+    <!-- Security Section -->
+    <div class="profile-card details-card">
+      <h3 class="section-title">Security Settings</h3>
+
+      <div class="security-options">
+        <div class="security-item">
+          <div class="security-info">
+            <h4>Change Password</h4>
+            <p>Update your password to keep your account secure</p>
+          </div>
+          <button class="btn-link">Update</button>
+        </div>
+
+        <div class="security-item">
+          <div class="security-info">
+            <h4>Two-Factor Authentication</h4>
+            <p>Add an extra layer of security to your account</p>
+          </div>
+          <button class="btn-link">Enable</button>
+        </div>
+
+        <div class="security-item">
+          <div class="security-info">
+            <h4>Login History</h4>
+            <p>View your recent login activity</p>
+          </div>
+          <button class="btn-link">View</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

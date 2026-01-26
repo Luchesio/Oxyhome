@@ -1,0 +1,150 @@
+<app-sidebar></app-sidebar>
+
+<div class="dashboard">
+  <header class="dashboard-header">
+    <h1 class="page-title">Dashboard</h1>
+    <div class="header-actions">
+      <button
+        class="notification-btn"
+        [class.has-notification]="hasNotifications"
+        (click)="goToNotifications()"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
+          />
+        </svg>
+      </button>
+      <div class="user-profile" (click)="goToProfile()">
+        <img
+          [src]="userProfile.avatar"
+          [alt]="userProfile.name"
+          class="avatar"
+        />
+        <span class="user-name">{{ userProfile.name }}</span>
+        <button class="dropdown-toggle">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M7 10l5 5 5-5z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="dashboard-content">
+    <div class="cards-row">
+      <!-- Wallet Balance Card -->
+      <div class="card wallet-card">
+        <div class="card-header">
+          <h2 class="card-title">Wallet Balance</h2>
+          <button class="icon-btn">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"
+              />
+            </svg>
+          </button>
+        </div>
+        <div class="balance-amount">
+          <span class="currency">₦</span>
+          <span class="amount">{{ walletBalance | number: "1.2-2" }}</span>
+          <button class="trend-btn positive">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"
+              />
+            </svg>
+          </button>
+        </div>
+        <p class="card-subtitle">Available Credit</p>
+      </div>
+
+      <!-- Linked Bank Account Card -->
+      <div class="card bank-card">
+        <div class="card-header">
+          <h2 class="card-title">Linked Bank Account</h2>
+        </div>
+        <div class="bank-info">
+          <div class="bank-icon">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M4 10h3v7H4zm6.5 0h3v7h-3zM2 19h20v3H2zm15-9h3v7h-3zm-5-9L2 6v2h20V6z"
+              />
+            </svg>
+          </div>
+          <div class="bank-details">
+            <p class="bank-name">{{ bankAccount.name }}</p>
+            <p class="account-number">•••• {{ bankAccount.lastFour }}</p>
+          </div>
+        </div>
+        <button class="btn-primary" (click)="topUpWallet()">
+          Top Up Wallet
+        </button>
+      </div>
+    </div>
+
+    <!-- Upcoming Installments Section -->
+    <div class="installments-section">
+      <h2 class="section-title">Installments</h2>
+
+      <div class="installments-table">
+        <div class="table-header">
+          <div class="col-appliance">Appliance</div>
+          <div class="col-date">Due date</div>
+          <div class="col-amount">Amount</div>
+        </div>
+
+        <div class="table-body">
+          <div *ngFor="let installment of installments" class="table-row">
+            <div class="col-appliance">
+              <div class="appliance-info">
+                <div class="appliance-icon">
+                  <img [src]="installment.icon" [alt]="installment.name" />
+                </div>
+                <div class="appliance-details">
+                  <p class="appliance-name">{{ installment.name }}</p>
+                  <p class="due-info">
+                    Due {{ installment.dueDate | date: "MMM dd, yyyy" }}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="col-date">
+              <span class="date-display">{{ installment.dueDateShort }}</span>
+            </div>
+            <div class="col-amount">
+              <div class="amount-info">
+                <p class="amount">
+                  ₦ {{ installment.amount | number: "1.2-2" }}
+                </p>
+                <span class="status-badge" [class]="installment.status">{{
+                  installment.status
+                }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
