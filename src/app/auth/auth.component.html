@@ -56,7 +56,9 @@
           </button>
         </div>
       </div>
-      <button type="submit" class="primary-btn">Login</button>
+      <button type="submit" class="primary-btn" [disabled]="isLoggingIn">
+        {{ isLoggingIn ? "Logging in" : "Login" }}
+      </button>
     </form>
 
     <!-- SIGNUP FORM -->

@@ -3,6 +3,9 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-auth',
@@ -26,11 +29,14 @@ export class AuthComponent {
   showSignupPassword: boolean = false;
   showConfirmPassword: boolean = false;
   isLoginMode = true;
+  isLoggingIn: boolean = false;
 
   // API base URL (adjust to your backend URL)
-  private apiUrl = 'http://localhost:8000/auth';
+  // private apiUrl = 'http://localhost:8000';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  private apiUrl = environment.apiUrl;
+
+  constructor(private http: HttpClient, private router: Router, private toastr: ToastrService) {}
 
   onSignup() {
     // Validate password match on frontend
@@ -54,7 +60,7 @@ export class AuthComponent {
     formData.append('first_name', this.signupFirstName);
     formData.append('last_name', this.signupLastName);
 
-    this.http.post(`${this.apiUrl}/signup`, formData).subscribe(
+    this.http.post(`${this.apiUrl}/auth/signup`, formData).subscribe(
       response => {
         console.log('Signup successful', response);
         alert('Signup successful! Logging in automatically...');
@@ -98,7 +104,7 @@ export class AuthComponent {
     loginFormData.append('username', email);
     loginFormData.append('password', password);
 
-    this.http.post(`${this.apiUrl}/login`, loginFormData).subscribe(
+    this.http.post(`${this.apiUrl}/auth/login`, loginFormData).subscribe(
       (response: any) => {
         console.log('Auto-login successful', response);
         localStorage.setItem('access_token', response.access_token);
@@ -112,19 +118,24 @@ export class AuthComponent {
   }
 
   onLogin() {
+    this.isLoggingIn = true;
     const formData = new FormData();
     formData.append('username', this.loginEmail);  // Note: backend uses 'username' for email in login
     formData.append('password', this.loginPassword);
 
-    this.http.post(`${this.apiUrl}/login`, formData).subscribe(
+    this.http.post(`${this.apiUrl}/auth/login`, formData).subscribe(
       (response: any) => {
-        console.log('Login successful', response);
+        // console.log('Login successful', response);
+        this.toastr.success('Login Successful');
         localStorage.setItem('access_token', response.access_token);
         this.router.navigate(['/dashboard']);
+        this.isLoggingIn = false;
       },
       error => {
-        console.error('Login error', error);
-        alert('Login failed: ' + (error.error?.detail || 'Unknown error'));
+        // console.error('Login error', error);
+        this.toastr.error('Login failed: ' + (error.error?.detail || 'Unknown error'));
+        // alert('Login failed: ' + (error.error?.detail || 'Unknown error'));
+        this.isLoggingIn = false;
       }
     );
   }

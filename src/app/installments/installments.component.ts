@@ -4,6 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { SidebarComponent } from "../sidebar/sidebar.component";
+import { ToastrService } from 'ngx-toastr';
+
+
+import { environment } from '../../environments/environment';
 
 interface Bank {
   name: string;
@@ -43,7 +47,9 @@ interface InvoiceResponse {
   styleUrl: './installments.component.scss'
 })
 export class InstallmentsComponent implements OnInit {
-  private apiUrl = 'http://localhost:8000';
+  // private apiUrl = 'http://localhost:8000';
+
+  private apiUrl = environment.apiUrl;
   
   // Form fields
   accountNumber: string = '';
@@ -99,7 +105,7 @@ export class InstallmentsComponent implements OnInit {
     { value: 'annually', label: 'Annually' }
   ];
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private toastr: ToastrService) {}
 
   ngOnInit(): void {
     this.fetchUserProfile();
@@ -127,7 +133,8 @@ export class InstallmentsComponent implements OnInit {
         };
       },
       error => {
-        console.error('Error fetching user profile', error);
+        // console.error('Error fetching user profile', error);
+        this.toastr.error('Error fetching user profile', error);
         if (error.status === 401) {
           localStorage.removeItem('access_token');
           this.router.navigate(['/auth']);
@@ -242,8 +249,10 @@ export class InstallmentsComponent implements OnInit {
         this.resetForm();
       }
     } catch (error: any) {
-      console.error('Error submitting invoice:', error);
-      alert('Failed to send invoice. Please try again.');
+      // console.error('Error submitting invoice:', error);
+      // alert('Failed to send invoice. Please try again.');
+      this.toastr.error('Failed to send invoice. Please try again.');
+      this.toastr.error('Error submitting invoice:', error);
     } finally {
       this.isLoading = false;
     }

@@ -4,6 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { SidebarComponent } from "../sidebar/sidebar.component";
+import { ToastrService } from 'ngx-toastr';
+
+
+import { environment } from '../../environments/environment';
 
 interface UserData {
   first_name: string;
@@ -21,7 +25,9 @@ interface UserData {
   styleUrl: './profile.component.scss'
 })
 export class ProfileComponent implements OnInit {
-  private apiUrl = 'http://localhost:8000/auth';
+  // private apiUrl = 'http://localhost:8000';
+
+  private apiUrl = environment.apiUrl;
   
   userData: UserData = {
     first_name: '',
@@ -43,7 +49,7 @@ export class ProfileComponent implements OnInit {
     walletBalance: 150000.00
   };
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private toastr: ToastrService) {}
 
   ngOnInit(): void {
     this.fetchUserProfile();
@@ -61,7 +67,7 @@ export class ProfileComponent implements OnInit {
       'Authorization': `Bearer ${token}`
     });
 
-    this.http.get<any>(`${this.apiUrl}/me`, { headers }).subscribe(
+    this.http.get<any>(`${this.apiUrl}/auth/me`, { headers }).subscribe(
       response => {
         this.userData = {
           first_name: response.first_name,
@@ -74,7 +80,8 @@ export class ProfileComponent implements OnInit {
         this.isLoading = false;
       },
       error => {
-        console.error('Error fetching user profile', error);
+        // console.error('Error fetching user profile', error);
+        this.toastr.error('Error fetching user profile:', error);
         this.isLoading = false;
         if (error.status === 401) {
           localStorage.removeItem('access_token');

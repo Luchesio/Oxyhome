@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { SidebarComponent } from "../sidebar/sidebar.component";
 
+import { environment } from '../../environments/environment';
+
 export interface BankAccount {
   name: string;
   lastFour: string;
@@ -32,7 +34,9 @@ export interface Installment {
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent implements OnInit {
-  private apiUrl = 'http://localhost:8000/auth';
+  // private apiUrl = 'http://localhost:8000';
+
+  private apiUrl = environment.apiUrl;
   
   walletBalance: number = 150000.00;
   hasNotifications: boolean = true;
@@ -105,7 +109,7 @@ export class DashboardComponent implements OnInit {
       'Authorization': `Bearer ${token}`
     });
 
-    this.http.get<any>(`${this.apiUrl}/me`, { headers }).subscribe(
+    this.http.get<any>(`${this.apiUrl}/auth/me`, { headers }).subscribe(
       response => {
         // Only use first_name for display
         this.userProfile = {

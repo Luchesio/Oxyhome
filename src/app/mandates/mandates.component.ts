@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { SidebarComponent } from "../sidebar/sidebar.component";
+import { ToastrService } from 'ngx-toastr';
+
+import { environment } from '../../environments/environment';
 
 interface UserProfile {
   first_name: string;
@@ -48,7 +51,9 @@ interface MandateResponse {
   styleUrl: './mandates.component.scss'
 })
 export class MandatesComponent implements OnInit {
-  private apiUrl = 'http://localhost:8000';
+  // private apiUrl = 'http://localhost:8000';
+
+  private apiUrl = environment.apiUrl;
   
   // User data
   userProfile: UserProfile | null = null;
@@ -60,7 +65,7 @@ export class MandatesComponent implements OnInit {
   isLoading: boolean = true;
   errorMessage: string = '';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router,  private toastr: ToastrService) {}
 
   ngOnInit(): void {
     this.fetchUserProfileAndMandates();
@@ -93,7 +98,8 @@ export class MandatesComponent implements OnInit {
       await this.fetchMandates();
       
     } catch (error: any) {
-      console.error('Error fetching user profile', error);
+      this.toastr.error('Error fetching user profile', error);
+      // console.error('Error fetching user profile', error);
       if (error.status === 401) {
         localStorage.removeItem('access_token');
         this.router.navigate(['/auth']);
@@ -162,7 +168,8 @@ export class MandatesComponent implements OnInit {
         this.errorMessage = 'No mandate data received';
       }
     } catch (error: any) {
-      console.error('Error fetching mandates:', error);
+      this.toastr.error('Error fetching mandates:', error);
+      // console.error('Error fetching mandates:', error);
       this.errorMessage = 'Failed to load mandates. Please try again.';
     } finally {
       this.isLoading = false;

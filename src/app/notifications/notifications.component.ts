@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { SidebarComponent } from "../sidebar/sidebar.component";
+import { ToastrService } from 'ngx-toastr';
+
+import { environment } from '../../environments/environment';
 
 interface Webhook {
   _id: string;
@@ -24,13 +27,15 @@ interface WebhookResponse {
   styleUrl: './notifications.component.scss'
 })
 export class NotificationsComponent implements OnInit {
-  private apiUrl = 'http://localhost:8000';
+  // private apiUrl = 'http://localhost:8000';
+
+  private apiUrl = environment.apiUrl;
   
   webhooks: Webhook[] = [];
   isLoading: boolean = true;
   errorMessage: string = '';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private toastr: ToastrService) {}
 
   ngOnInit(): void {
     this.fetchWebhooks();
@@ -63,7 +68,8 @@ export class NotificationsComponent implements OnInit {
         this.errorMessage = 'No webhook data received';
       }
     } catch (error: any) {
-      console.error('Error fetching webhooks:', error);
+      // console.error('Error fetching webhooks:', error);
+      this.toastr.error('Error fetching webhooks:', error);
       if (error.status === 401) {
         localStorage.removeItem('access_token');
         this.router.navigate(['/auth']);
