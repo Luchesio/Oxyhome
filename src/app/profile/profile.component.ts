@@ -18,6 +18,12 @@ interface UserData {
   user_id?: string;
 }
 
+interface PasswordChangeData {
+  current_password: string;
+  new_password: string;
+  confirm_password: string;
+}
+
 @Component({
   selector: 'app-profile',
   imports: [SidebarComponent, CommonModule, FormsModule],
@@ -38,8 +44,16 @@ export class ProfileComponent implements OnInit {
     user_id: ''
   };
 
+  passwordData: PasswordChangeData = {
+    current_password: '',
+    new_password: '',
+    confirm_password: ''
+  };
+
   isLoading: boolean = true;
   editMode: boolean = false;
+  showPasswordModal: boolean = false;
+  isChangingPassword: boolean = false;
 
   // Additional profile stats (you can fetch these from your backend)
   profileStats = {
@@ -81,7 +95,7 @@ export class ProfileComponent implements OnInit {
       },
       error => {
         // console.error('Error fetching user profile', error);
-        this.toastr.error('Error fetching user profile:', error);
+        this.toastr.error('Error fetching user profile');
         this.isLoading = false;
         if (error.status === 401) {
           localStorage.removeItem('access_token');
@@ -93,13 +107,116 @@ export class ProfileComponent implements OnInit {
 
   toggleEditMode(): void {
     this.editMode = !this.editMode;
+    if (!this.editMode) {
+      // Reload user data if edit is cancelled
+      this.fetchUserProfile();
+    }
   }
 
   saveProfile(): void {
-    // Implement save functionality here
-    console.log('Saving profile:', this.userData);
-    this.editMode = false;
-    // You can make a PUT/PATCH request to update user data
+    const token = localStorage.getItem('access_token');
+    
+    if (!token) {
+      this.toastr.error('You must be logged in to update your profile');
+      this.router.navigate(['/auth']);
+      return;
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+
+    const updateData = {
+      first_name: this.userData.first_name,
+      last_name: this.userData.last_name,
+      email: this.userData.email,
+      phone_number: this.userData.phone_number
+    };
+
+    this.http.put<any>(`${this.apiUrl}/auth/me`, updateData, { headers }).subscribe(
+      response => {
+        this.toastr.success('Profile updated successfully!');
+        this.editMode = false;
+        this.fetchUserProfile(); // Refresh the data
+      },
+      error => {
+        console.error('Error updating profile', error);
+        if (error.error && error.error.detail) {
+          this.toastr.error(error.error.detail);
+        } else {
+          this.toastr.error('Failed to update profile. Please try again.');
+        }
+      }
+    );
+  }
+
+  openPasswordModal(): void {
+    this.showPasswordModal = true;
+    this.passwordData = {
+      current_password: '',
+      new_password: '',
+      confirm_password: ''
+    };
+  }
+
+  closePasswordModal(): void {
+    this.showPasswordModal = false;
+    this.passwordData = {
+      current_password: '',
+      new_password: '',
+      confirm_password: ''
+    };
+  }
+
+  changePassword(): void {
+    // Validation
+    if (!this.passwordData.current_password || !this.passwordData.new_password || !this.passwordData.confirm_password) {
+      this.toastr.error('All password fields are required');
+      return;
+    }
+
+    if (this.passwordData.new_password !== this.passwordData.confirm_password) {
+      this.toastr.error('New passwords do not match');
+      return;
+    }
+
+    if (this.passwordData.new_password.length < 8) {
+      this.toastr.error('New password must be at least 8 characters long');
+      return;
+    }
+
+    const token = localStorage.getItem('access_token');
+    
+    if (!token) {
+      this.toastr.error('You must be logged in to change your password');
+      this.router.navigate(['/auth']);
+      return;
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+
+    this.isChangingPassword = true;
+
+    this.http.post<any>(`${this.apiUrl}/auth/change-password`, this.passwordData, { headers }).subscribe(
+      response => {
+        this.toastr.success('Password changed successfully!');
+        this.closePasswordModal();
+        this.isChangingPassword = false;
+      },
+      error => {
+        console.error('Error changing password', error);
+        if (error.error && error.error.detail) {
+          this.toastr.error(error.error.detail);
+        } else {
+          this.toastr.error('Failed to change password. Please try again.');
+        }
+        this.isChangingPassword = false;
+      }
+    );
   }
 
   logout(): void {
@@ -118,7 +235,14 @@ export class ProfileComponent implements OnInit {
   }
 
   getFullName(): string {
-    return `${this.userData.first_name} ${this.userData.last_name}`.trim();
+    const firstName = this.userData.first_name ? this.capitalizeFirstLetter(this.userData.first_name) : '';
+    const lastName = this.userData.last_name ? this.capitalizeFirstLetter(this.userData.last_name) : '';
+    return `${firstName} ${lastName}`.trim();
+  }
+
+  capitalizeFirstLetter(text: string): string {
+    if (!text) return '';
+    return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
   }
 
   getMemberSince(): string {

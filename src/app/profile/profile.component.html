@@ -220,25 +220,110 @@
             <h4>Change Password</h4>
             <p>Update your password to keep your account secure</p>
           </div>
-          <button class="btn-link">Update</button>
+          <button class="btn-link" (click)="openPasswordModal()">Update</button>
         </div>
 
-        <div class="security-item">
+        <!-- <div class="security-item">
           <div class="security-info">
             <h4>Two-Factor Authentication</h4>
             <p>Add an extra layer of security to your account</p>
           </div>
           <button class="btn-link">Enable</button>
-        </div>
+        </div> -->
 
-        <div class="security-item">
+        <!-- <div class="security-item">
           <div class="security-info">
             <h4>Login History</h4>
             <p>View your recent login activity</p>
           </div>
           <button class="btn-link">View</button>
-        </div>
+        </div> -->
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Password Change Modal -->
+<div
+  *ngIf="showPasswordModal"
+  class="modal-overlay"
+  (click)="closePasswordModal()"
+>
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Change Password</h2>
+      <button class="close-btn" (click)="closePasswordModal()">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="current-password">Current Password</label>
+        <input
+          type="password"
+          id="current-password"
+          [(ngModel)]="passwordData.current_password"
+          class="form-input"
+          placeholder="Enter your current password"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="new-password">New Password</label>
+        <input
+          type="password"
+          id="new-password"
+          [(ngModel)]="passwordData.new_password"
+          class="form-input"
+          placeholder="Enter your new password (min 8 characters)"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="confirm-password">Confirm New Password</label>
+        <input
+          type="password"
+          id="confirm-password"
+          [(ngModel)]="passwordData.confirm_password"
+          class="form-input"
+          placeholder="Confirm your new password"
+        />
+      </div>
+
+      <div class="password-requirements">
+        <p><strong>Password Requirements:</strong></p>
+        <ul>
+          <li>At least 8 characters long</li>
+          <li>Different from your current password</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button
+        class="btn-secondary"
+        (click)="closePasswordModal()"
+        [disabled]="isChangingPassword"
+      >
+        Cancel
+      </button>
+      <button
+        class="btn-primary"
+        (click)="changePassword()"
+        [disabled]="isChangingPassword"
+      >
+        <span *ngIf="!isChangingPassword">Change Password</span>
+        <span *ngIf="isChangingPassword">Changing...</span>
+      </button>
     </div>
   </div>
 </div>
