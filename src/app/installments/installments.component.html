@@ -64,7 +64,7 @@
                 [(ngModel)]="amount"
                 name="amount"
                 class="form-control"
-                placeholder="Enter total amount"
+                placeholder="10000 is ₦100"
                 min="1"
                 step="1"
                 required
@@ -81,7 +81,7 @@
                 [(ngModel)]="downPayment"
                 name="downPayment"
                 class="form-control"
-                placeholder="Enter down payment"
+                placeholder="10000 is ₦100"
                 min="1"
                 step="1"
                 required
@@ -121,6 +121,23 @@
                 </span>
                 <span class="info-text">payments</span>
               </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label for="transactionDesc" class="form-label"
+                >Transaction Description</label
+              >
+              <textarea
+                id="transactionDesc"
+                [(ngModel)]="transactionDesc"
+                name="transactionDesc"
+                class="form-control"
+                placeholder="Enter transaction description"
+                rows="3"
+                required
+              ></textarea>
             </div>
           </div>
         </div>

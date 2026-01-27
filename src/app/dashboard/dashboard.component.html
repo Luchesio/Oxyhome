@@ -98,51 +98,149 @@
           </div>
         </div>
         <button class="btn-primary" (click)="topUpWallet()">
-          Top Up Wallet
+          Link Bank Account
         </button>
       </div>
     </div>
 
-    <!-- Upcoming Installments Section -->
-    <div class="installments-section">
-      <h2 class="section-title">Installments</h2>
+    <!-- Active Mandates Section -->
+    <div class="mandates-section">
+      <div class="section-header">
+        <h2 class="section-title">Active Mandates</h2>
+        <button class="btn-view-all" (click)="goToMandates()">
+          View All
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z" />
+          </svg>
+        </button>
+      </div>
 
-      <div class="installments-table">
-        <div class="table-header">
-          <div class="col-appliance">Appliance</div>
-          <div class="col-date">Due date</div>
-          <div class="col-amount">Amount</div>
+      <div class="mandates-content">
+        <!-- Loading State -->
+        <div class="loading-container" *ngIf="isLoadingMandates">
+          <div class="loading-spinner">
+            <svg class="spinner" viewBox="0 0 24 24">
+              <circle
+                class="spinner-circle"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke-width="3"
+                fill="none"
+              />
+            </svg>
+            <p class="loading-text">Loading mandates...</p>
+          </div>
         </div>
 
-        <div class="table-body">
-          <div *ngFor="let installment of installments" class="table-row">
-            <div class="col-appliance">
-              <div class="appliance-info">
-                <div class="appliance-icon">
-                  <img [src]="installment.icon" [alt]="installment.name" />
-                </div>
-                <div class="appliance-details">
-                  <p class="appliance-name">{{ installment.name }}</p>
-                  <p class="due-info">
-                    Due {{ installment.dueDate | date: "MMM dd, yyyy" }}
-                  </p>
-                </div>
+        <!-- Error State -->
+        <div
+          class="error-container"
+          *ngIf="!isLoadingMandates && mandatesError"
+        >
+          <div class="error-icon">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+              />
+            </svg>
+          </div>
+          <p class="error-message">{{ mandatesError }}</p>
+          <button class="btn-retry" (click)="refreshMandates()">
+            Try Again
+          </button>
+        </div>
+
+        <!-- Empty State -->
+        <div
+          class="empty-container"
+          *ngIf="
+            !isLoadingMandates &&
+            !mandatesError &&
+            displayedMandates.length === 0
+          "
+        >
+          <div class="empty-icon">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"
+              />
+            </svg>
+          </div>
+          <p class="empty-message">No active mandates</p>
+          <p class="empty-subtitle">
+            You don't have any active payment mandates at the moment
+          </p>
+        </div>
+
+        <!-- Mandates Grid (Limited to 2) -->
+        <div
+          class="mandates-grid"
+          *ngIf="
+            !isLoadingMandates && !mandatesError && displayedMandates.length > 0
+          "
+        >
+          <div class="mandate-card" *ngFor="let account of displayedMandates">
+            <div class="mandate-header">
+              <div class="bank-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M4 10v7h3v-7H4zm6 0v7h3v-7h-3zM2 22h19v-3H2v3zm14-12v7h3v-7h-3zm-4.5-9L2 6v2h19V6l-9.5-5z"
+                  />
+                </svg>
+              </div>
+              <div
+                class="status-badge"
+                [ngClass]="getStatusClass(account.extended_data.mandate_status)"
+              >
+                {{ account.extended_data.mandate_status }}
               </div>
             </div>
-            <div class="col-date">
-              <span class="date-display">{{ installment.dueDateShort }}</span>
-            </div>
-            <div class="col-amount">
-              <div class="amount-info">
-                <p class="amount">
-                  ₦ {{ installment.amount | number: "1.2-2" }}
-                </p>
-                <span class="status-badge" [class]="installment.status">{{
-                  installment.status
+
+            <div class="mandate-body">
+              <div class="info-group">
+                <span class="info-label">Account Name</span>
+                <span class="info-value">{{ account.account_name }}</span>
+              </div>
+
+              <div class="info-group">
+                <span class="info-label">Account Number</span>
+                <span class="info-value highlight">{{
+                  account.account_number
                 }}</span>
+              </div>
+
+              <div class="info-group">
+                <span class="info-label">Bank Name</span>
+                <span class="info-value">{{ account.bank_name }}</span>
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- Show count if more mandates exist -->
+        <div class="more-mandates" *ngIf="remainingMandatesCount > 0">
+          <p class="more-text">
+            + {{ remainingMandatesCount }} more mandate{{
+              remainingMandatesCount > 1 ? "s" : ""
+            }}
+          </p>
         </div>
       </div>
     </div>

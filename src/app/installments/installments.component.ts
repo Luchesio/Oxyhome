@@ -58,6 +58,7 @@ export class InstallmentsComponent implements OnInit {
   downPayment: number | null = null;
   repeatFrequency: string = '';
   numberOfPayments: number | null = null;
+  transactionDesc: string = '';
   
   // User data from backend
   userProfile: UserProfile | null = null;
@@ -181,7 +182,8 @@ export class InstallmentsComponent implements OnInit {
       this.amount &&
       this.downPayment &&
       this.repeatFrequency &&
-      this.userProfile
+      this.userProfile &&
+      this.transactionDesc
     );
   }
 
@@ -214,7 +216,7 @@ export class InstallmentsComponent implements OnInit {
       transaction: {
         mock_mode: "Inspect",
         transaction_ref: transactionRef,
-        transaction_desc: `Installment payment - ${this.amount}`,
+        transaction_desc: this.transactionDesc,
         transaction_ref_parent: null,
         amount: this.amount,
         customer: {
@@ -265,6 +267,7 @@ export class InstallmentsComponent implements OnInit {
     this.downPayment = null;
     this.repeatFrequency = '';
     this.numberOfPayments = null;
+    this.transactionDesc = '';
   }
 
   closeModal(): void {
