@@ -47,9 +47,9 @@ interface InvoiceResponse {
   styleUrl: './installments.component.scss'
 })
 export class InstallmentsComponent implements OnInit {
-  private apiUrl = 'http://localhost:8000';
+  // private apiUrl = 'http://localhost:8000';
 
-  // private apiUrl = environment.apiUrl;
+  private apiUrl = environment.apiUrl;
   
   // Form fields
   accountNumber: string = '';
