@@ -137,7 +137,7 @@ export class MandatesComponent implements OnInit {
       request_ref: requestRef,
       request_type: "Get Accounts Max",
       transaction: {
-        mock_mode: "Live",
+        mock_mode: "Inspect",
         transaction_ref: transactionRef,
         transaction_desc: "Check active mandates",
         transaction_ref_parent: null,
