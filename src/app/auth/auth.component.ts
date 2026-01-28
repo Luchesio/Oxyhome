@@ -32,9 +32,9 @@ export class AuthComponent {
   isLoggingIn: boolean = false;
 
   // API base URL (adjust to your backend URL)
-  private apiUrl = 'http://localhost:8000';
+  // private apiUrl = 'http://localhost:8000';
 
-  // private apiUrl = environment.apiUrl;
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient, private router: Router, private toastr: ToastrService) {}
 

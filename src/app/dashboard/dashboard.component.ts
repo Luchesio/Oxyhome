@@ -99,8 +99,8 @@ interface AccountLookupResponse {
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent implements OnInit {
-  private apiUrl = 'http://localhost:8000';
-  // private apiUrl = environment.apiUrl;
+  // private apiUrl = 'http://localhost:8000';
+  private apiUrl = environment.apiUrl;
   
   walletBalance: number = 150000.00;
   hasNotifications: boolean = true;

@@ -51,9 +51,9 @@ interface MandateResponse {
   styleUrl: './mandates.component.scss'
 })
 export class MandatesComponent implements OnInit {
-  private apiUrl = 'http://localhost:8000';
+  // private apiUrl = 'http://localhost:8000';
 
-  // private apiUrl = environment.apiUrl;
+  private apiUrl = environment.apiUrl;
   
   // User data
   userProfile: UserProfile | null = null;
