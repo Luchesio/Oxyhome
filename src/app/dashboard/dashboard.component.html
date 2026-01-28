@@ -97,7 +97,7 @@
             <p class="account-number">•••• {{ bankAccount.lastFour }}</p>
           </div>
         </div>
-        <button class="btn-primary" (click)="topUpWallet()">
+        <button class="btn-primary" (click)="openLinkBankModal()">
           Link Bank Account
         </button>
       </div>
@@ -243,6 +243,209 @@
           </p>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Link Bank Account Modal -->
+<div
+  class="modal-overlay"
+  *ngIf="showLinkBankModal"
+  (click)="closeLinkBankModal()"
+>
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">Link Bank Account</h2>
+      <button class="modal-close" (click)="closeLinkBankModal()">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <form class="link-bank-form">
+        <div class="form-group">
+          <label for="bankSelect" class="form-label">Select Bank</label>
+          <select
+            id="bankSelect"
+            [(ngModel)]="selectedBankCode"
+            name="bankCode"
+            class="form-control"
+            required
+          >
+            <option value="" disabled selected>Choose your bank</option>
+            <option *ngFor="let bank of banks" [value]="bank.code">
+              {{ bank.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="linkAccountNumber" class="form-label"
+            >Account Number</label
+          >
+          <input
+            type="text"
+            id="linkAccountNumber"
+            [(ngModel)]="linkAccountNumber"
+            name="linkAccountNumber"
+            class="form-control"
+            placeholder="Enter your 10-digit account number"
+            maxlength="10"
+            pattern="[0-9]{10}"
+            required
+          />
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <button
+        class="btn-secondary"
+        (click)="closeLinkBankModal()"
+        [disabled]="isLinkingBank"
+      >
+        Cancel
+      </button>
+      <button
+        class="btn-primary"
+        (click)="submitBankAccountLookup()"
+        [disabled]="!isLinkBankFormValid() || isLinkingBank"
+      >
+        <span *ngIf="!isLinkingBank">Verify Account</span>
+        <span *ngIf="isLinkingBank" class="loading-spinner">
+          <svg class="spinner" viewBox="0 0 24 24">
+            <circle
+              class="spinner-circle"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke-width="3"
+              fill="none"
+            />
+          </svg>
+          Verifying...
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Bank Account Response Modal -->
+<div
+  class="modal-overlay"
+  *ngIf="showBankResponseModal"
+  (click)="closeBankResponseModal()"
+>
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">Account Verification</h2>
+      <button class="modal-close" (click)="closeBankResponseModal()">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="message-section">
+        <div class="message-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+          </svg>
+        </div>
+        <p class="message-text">{{ bankResponseMessage }}</p>
+      </div>
+
+      <div class="account-details-section" *ngIf="bankResponseData">
+        <h3 class="section-title">Account Details</h3>
+        <div class="details-grid">
+          <div class="detail-item">
+            <span class="detail-label">Account Name</span>
+            <span class="detail-value">{{
+              bankResponseData.account_name
+            }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">Account Number</span>
+            <span class="detail-value highlight">{{
+              bankResponseData.account_number
+            }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">Customer ID</span>
+            <span class="detail-value">{{ bankResponseData.customer_id }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">First Name</span>
+            <span class="detail-value">{{ bankResponseData.first_name }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">Last Name</span>
+            <span class="detail-value">{{ bankResponseData.last_name }}</span>
+          </div>
+
+          <div
+            class="detail-item"
+            *ngIf="
+              bankResponseData.middle_name &&
+              bankResponseData.middle_name !== '-'
+            "
+          >
+            <span class="detail-label">Middle Name</span>
+            <span class="detail-value">{{ bankResponseData.middle_name }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">Gender</span>
+            <span class="detail-value">{{ bankResponseData.gender }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">Currency</span>
+            <span class="detail-value">{{
+              bankResponseData.account_currency
+            }}</span>
+          </div>
+
+          <div class="detail-item full-width" *ngIf="bankResponseData.dob">
+            <span class="detail-label">Date of Birth</span>
+            <span class="detail-value">{{ bankResponseData.dob }}</span>
+          </div>
+
+          <div class="detail-item full-width">
+            <span class="detail-label">Reference</span>
+            <span class="detail-value">{{ bankResponseData.reference }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-primary" (click)="saveBankAccountToDatabase()">
+        Done & Link Account
+      </button>
     </div>
   </div>
 </div>

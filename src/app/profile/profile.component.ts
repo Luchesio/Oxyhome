@@ -31,9 +31,9 @@ interface PasswordChangeData {
   styleUrl: './profile.component.scss'
 })
 export class ProfileComponent implements OnInit {
-  // private apiUrl = 'http://localhost:8000';
+  private apiUrl = 'http://localhost:8000';
 
-  private apiUrl = environment.apiUrl;
+  // private apiUrl = environment.apiUrl;
   
   userData: UserData = {
     first_name: '',
