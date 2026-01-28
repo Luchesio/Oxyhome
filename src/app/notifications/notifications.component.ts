@@ -27,9 +27,9 @@ interface WebhookResponse {
   styleUrl: './notifications.component.scss'
 })
 export class NotificationsComponent implements OnInit {
-  // private apiUrl = 'http://localhost:8000';
+  private apiUrl = 'http://localhost:8000';
 
-  private apiUrl = environment.apiUrl;
+  // private apiUrl = environment.apiUrl;
   
   webhooks: Webhook[] = [];
   isLoading: boolean = true;

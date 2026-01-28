@@ -47,9 +47,9 @@ interface InvoiceResponse {
   styleUrl: './installments.component.scss'
 })
 export class InstallmentsComponent implements OnInit {
-  // private apiUrl = 'http://localhost:8000';
+  private apiUrl = 'http://localhost:8000';
 
-  private apiUrl = environment.apiUrl;
+  // private apiUrl = environment.apiUrl;
   
   // Form fields
   accountNumber: string = '';
@@ -102,14 +102,15 @@ export class InstallmentsComponent implements OnInit {
 
   repeatFrequencies = [
     { value: 'daily', label: 'Daily' },
-    { value: 'monthly', label: 'Monthly' },
-    { value: 'annually', label: 'Annually' }
+    { value: 'weekly', label: 'Weekly' },
+    { value: 'monthly', label: 'Monthly' }
   ];
 
   constructor(private http: HttpClient, private router: Router, private toastr: ToastrService) {}
 
   ngOnInit(): void {
     this.fetchUserProfile();
+    this.loadPrimaryBankAccount();
   }
 
   fetchUserProfile(): void {
@@ -142,6 +143,39 @@ export class InstallmentsComponent implements OnInit {
         }
       }
     );
+  }
+
+  async loadPrimaryBankAccount(): Promise<void> {
+    const token = localStorage.getItem('access_token');
+    
+    if (!token) {
+      return;
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    try {
+      const response = await this.http.get<any>(
+        `${this.apiUrl}/api/bank-accounts/primary`, 
+        { headers }
+      ).toPromise();
+      
+      if (response && response.status === 'success' && response.data) {
+        // Auto-fill bank account details
+        this.accountNumber = response.data.account_number || '';
+        this.selectedBankCode = response.data.cbn_bankcode || '';
+        
+        console.log('Bank account loaded:', {
+          accountNumber: this.accountNumber,
+          selectedBankCode: this.selectedBankCode
+        });
+      }
+    } catch (error) {
+      console.error('Error loading primary bank account:', error);
+      // Fields remain empty if no account found
+    }
   }
 
   generateRandomDigits(length: number): string {
@@ -214,7 +248,7 @@ export class InstallmentsComponent implements OnInit {
       auth_type: "bank.account",
       auth_provider: "PaywithAccount",
       transaction: {
-        mock_mode: "Inspect",
+        mock_mode: "Live",
         transaction_ref: transactionRef,
         transaction_desc: this.transactionDesc,
         transaction_ref_parent: null,

@@ -51,9 +51,9 @@ interface MandateResponse {
   styleUrl: './mandates.component.scss'
 })
 export class MandatesComponent implements OnInit {
-  // private apiUrl = 'http://localhost:8000';
+  private apiUrl = 'http://localhost:8000';
 
-  private apiUrl = environment.apiUrl;
+  // private apiUrl = environment.apiUrl;
   
   // User data
   userProfile: UserProfile | null = null;
@@ -137,7 +137,7 @@ export class MandatesComponent implements OnInit {
       request_ref: requestRef,
       request_type: "Get Accounts Max",
       transaction: {
-        mock_mode: "Inspect",
+        mock_mode: "Live",
         transaction_ref: transactionRef,
         transaction_desc: "Check active mandates",
         transaction_ref_parent: null,
