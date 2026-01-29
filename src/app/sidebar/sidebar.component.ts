@@ -44,7 +44,7 @@ export class SidebarComponent {
       route: '/profile'
     },
     {
-      label: 'My Installments',
+      label: 'Mandates',
       icon: 'assets/myinstallment.svg',
       route: '/mandates'
     }
