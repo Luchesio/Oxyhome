@@ -103,10 +103,11 @@ interface AccountLookupResponse {
 export class DashboardComponent implements OnInit {
   // private apiUrl = 'http://localhost:8000';
 
-  
+
   private apiUrl = environment.apiUrl;
   
-  walletBalance: number = 150000.00;
+  walletBalance: number = 0.00;
+  isLoadingBalance: boolean = false;
   hasNotifications: boolean = true;
 
   userProfile: UserProfile = {
@@ -225,6 +226,7 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.fetchUserProfile();
     this.loadPrimaryBankAccount();
+    this.loadWalletBalance();
   }
 
   fetchUserProfile(): void {
@@ -269,6 +271,37 @@ export class DashboardComponent implements OnInit {
       result += Math.floor(Math.random() * 10);
     }
     return result;
+  }
+
+  async loadWalletBalance(): Promise<void> {
+    const token = localStorage.getItem('access_token');
+    
+    if (!token) {
+      return;
+    }
+
+    this.isLoadingBalance = true;
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    try {
+      const response = await this.http.get<any>(
+        `${this.apiUrl}/api/wallet/balance`, 
+        { headers }
+      ).toPromise();
+      
+      if (response && response.status === 'success' && response.data) {
+        this.walletBalance = response.data.balance || 0.00;
+      }
+    } catch (error) {
+      console.error('Error loading wallet balance:', error);
+      // Keep default value of 0.00 if error
+      this.walletBalance = 0.00;
+    } finally {
+      this.isLoadingBalance = false;
+    }
   }
 
   async loadPrimaryBankAccount(): Promise<void> {
