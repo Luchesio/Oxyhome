@@ -11,6 +11,8 @@ import { environment } from '../../environments/environment';
 export interface BankAccount {
   name: string;
   lastFour: string;
+  bankName?: string;
+  fullAccountNumber?: string;
 }
 
 export interface UserProfile {
@@ -100,6 +102,8 @@ interface AccountLookupResponse {
 })
 export class DashboardComponent implements OnInit {
   // private apiUrl = 'http://localhost:8000';
+
+  
   private apiUrl = environment.apiUrl;
   
   walletBalance: number = 150000.00;
@@ -112,8 +116,10 @@ export class DashboardComponent implements OnInit {
   };
 
   bankAccount: BankAccount = {
-    name: 'Access Bank',
-    lastFour: '5678'
+    name: 'No Account Linked',
+    lastFour: '****',
+    bankName: '',
+    fullAccountNumber: ''
   };
 
   // Mandates properties
@@ -122,6 +128,10 @@ export class DashboardComponent implements OnInit {
   isLoadingMandates: boolean = false;
   mandatesError: string = '';
   remainingMandatesCount: number = 0;
+
+  // Account linking notification
+  hasLinkedAccount: boolean = false;
+  showLinkAccountNotification: boolean = false;
 
   // Bank linking modal properties
   showLinkBankModal: boolean = false;
@@ -279,15 +289,37 @@ export class DashboardComponent implements OnInit {
       ).toPromise();
       
       if (response && response.status === 'success' && response.data) {
+        // User has a linked account
+        this.hasLinkedAccount = true;
+        
         // Update bank account display with actual data from database
         this.bankAccount = {
-          name: response.data.account_name || 'No Account',
-          lastFour: response.data.account_number ? response.data.account_number.slice(-4) : '****'
+          name: response.data.account_name || 'Account Holder',
+          lastFour: response.data.account_number ? response.data.account_number.slice(-4) : '****',
+          bankName: response.data.bank_name || '',
+          fullAccountNumber: response.data.account_number || ''
         };
+      } else {
+        // No linked account - show notification after a short delay
+        this.hasLinkedAccount = false;
+        setTimeout(() => {
+          this.showLinkAccountNotification = true;
+          // Auto-hide after 5 seconds
+          setTimeout(() => {
+            this.showLinkAccountNotification = false;
+          }, 5000);
+        }, 1000);
       }
     } catch (error) {
       console.error('Error loading primary bank account:', error);
-      // Keep default values if no account found
+      // No account found - show notification
+      this.hasLinkedAccount = false;
+      setTimeout(() => {
+        this.showLinkAccountNotification = true;
+        setTimeout(() => {
+          this.showLinkAccountNotification = false;
+        }, 5000);
+      }, 1000);
     }
   }
 
@@ -531,14 +563,22 @@ export class DashboardComponent implements OnInit {
       if (response && response.status === 'success') {
         this.toastr.success('Bank account linked successfully!');
         
-        // Update the displayed bank account info with account_name
+        // Update the displayed bank account info with all details
         this.bankAccount = {
           name: this.bankResponseData.account_name || bankName,
-          lastFour: this.linkAccountNumber.slice(-4)
+          lastFour: this.linkAccountNumber.slice(-4),
+          bankName: bankName,
+          fullAccountNumber: this.linkAccountNumber
         };
+        
+        // Mark as having linked account
+        this.hasLinkedAccount = true;
         
         // Close modal
         this.closeBankResponseModal();
+        
+        // Reload bank account to ensure UI is in sync with database
+        this.loadPrimaryBankAccount();
         
         // Optionally refresh mandates or other data
         this.fetchMandates();
@@ -581,5 +621,9 @@ export class DashboardComponent implements OnInit {
   logout(): void {
     localStorage.removeItem('access_token');
     this.router.navigate(['/auth']);
+  }
+
+  dismissLinkAccountNotification(): void {
+    this.showLinkAccountNotification = false;
   }
 }
