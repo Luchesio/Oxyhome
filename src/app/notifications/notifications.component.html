@@ -5,7 +5,7 @@
     <div class="header-content">
       <h1 class="page-title">Notifications</h1>
       <p class="page-subtitle">
-        View all your webhook notifications and system updates
+        View all your webhook notifications and payment updates
       </p>
     </div>
     <button
@@ -27,7 +27,6 @@
   </header>
 
   <div class="notifications-content">
-    <!-- Loading State -->
     <div class="loading-container" *ngIf="isLoading">
       <div class="loading-spinner">
         <svg class="spinner" viewBox="0 0 24 24">
@@ -44,7 +43,6 @@
       </div>
     </div>
 
-    <!-- Error State -->
     <div class="error-container" *ngIf="!isLoading && errorMessage">
       <div class="error-icon">
         <svg
@@ -61,7 +59,6 @@
       <button class="btn-retry" (click)="refreshWebhooks()">Try Again</button>
     </div>
 
-    <!-- Empty State -->
     <div
       class="empty-container"
       *ngIf="!isLoading && !errorMessage && webhooks.length === 0"
@@ -83,16 +80,13 @@
       </p>
     </div>
 
-    <!-- Notifications List -->
     <div
       class="notifications-list"
       *ngIf="!isLoading && !errorMessage && webhooks.length > 0"
     >
       <div class="notification-card" *ngFor="let webhook of webhooks">
-        <div class="notification-icon" [ngClass]="getEventIcon(webhook.event)">
-          <!-- Payment Icon -->
+        <div class="notification-icon payment">
           <svg
-            *ngIf="getEventIcon(webhook.event) === 'payment'"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="currentColor"
@@ -101,56 +95,57 @@
               d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"
             />
           </svg>
-
-          <!-- Mandate Icon -->
-          <svg
-            *ngIf="getEventIcon(webhook.event) === 'mandate'"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-          >
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-          </svg>
-
-          <!-- Account Icon -->
-          <svg
-            *ngIf="getEventIcon(webhook.event) === 'account'"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-          >
-            <path
-              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"
-            />
-          </svg>
-
-          <!-- Generic Notification Icon -->
-          <svg
-            *ngIf="getEventIcon(webhook.event) === 'notification'"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-          >
-            <path
-              d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
-            />
-          </svg>
         </div>
 
         <div class="notification-content">
           <div class="notification-header">
-            <h3 class="notification-title">{{ webhook.event }}</h3>
+            <h3 class="notification-title">Payment Notification</h3>
             <span
               class="event-badge"
-              [ngClass]="getEventTypeClass(webhook.event)"
+              [ngClass]="getStatusClass(webhook.details.status)"
             >
-              {{ webhook.event }}
+              {{ webhook.details.status || "Unknown" }}
             </span>
           </div>
 
           <div class="notification-body">
-            <div class="webhook-data">
-              <pre>{{ webhook.data | json }}</pre>
+            <div class="notification-info">
+              <div class="info-row" *ngIf="webhook.details.meta.note">
+                <span class="info-label">Note:</span>
+                <span class="info-value">{{ getPaymentNote(webhook) }}</span>
+              </div>
+
+              <div class="info-row" *ngIf="webhook.details.meta.payment_option">
+                <span class="info-label">Payment Option:</span>
+                <span class="info-value">{{ getPaymentOption(webhook) }}</span>
+              </div>
+
+              <div
+                class="info-row"
+                *ngIf="webhook.details.meta.pwt_item_amount"
+              >
+                <span class="info-label">Amount:</span>
+                <span class="info-value amount"
+                  >₦{{
+                    getPaymentAmount(webhook) / 100 | number: "1.2-2"
+                  }}</span
+                >
+              </div>
+
+              <div class="info-row" *ngIf="webhook.details.transaction_ref">
+                <span class="info-label">Reference:</span>
+                <span class="info-value">{{
+                  webhook.details.transaction_ref
+                }}</span>
+              </div>
+
+              <div class="info-row" *ngIf="webhook.details.customer_firstname">
+                <span class="info-label">Customer:</span>
+                <span class="info-value"
+                  >{{ webhook.details.customer_firstname }}
+                  {{ webhook.details.customer_surname }}</span
+                >
+              </div>
             </div>
           </div>
 
@@ -173,7 +168,6 @@
       </div>
     </div>
 
-    <!-- Summary -->
     <div
       class="notifications-summary"
       *ngIf="!isLoading && !errorMessage && webhooks.length > 0"

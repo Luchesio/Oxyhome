@@ -9,10 +9,31 @@ import { environment } from '../../environments/environment';
 
 interface Webhook {
   _id: string;
-  event: string;
-  data: any;
-  timestamp: string;
+  request_ref: string;
+  request_type: string;
+  requester: string;
+  mock_mode: string;
+  details: {
+    amount: string;
+    transaction_type: string;
+    transaction_ref: string;
+    transaction_desc: string;
+    status: string;
+    provider: string;
+    customer_ref: string;
+    customer_email: string;
+    customer_firstname: string;
+    customer_surname: string;
+    customer_mobile_no: string;
+    meta: {
+      note?: string;
+      payment_option?: string;
+      pwt_item_amount?: number;
+      [key: string]: any;
+    };
+  };
   received_at: string;
+  signature: string;
 }
 
 interface WebhookResponse {
@@ -85,16 +106,17 @@ export class NotificationsComponent implements OnInit {
     this.fetchWebhooks();
   }
 
-  getEventTypeClass(event: string): string {
-    const eventLower = event.toLowerCase();
-    if (eventLower.includes('success') || eventLower.includes('complete')) {
-      return 'success';
-    } else if (eventLower.includes('error') || eventLower.includes('fail')) {
-      return 'error';
-    } else if (eventLower.includes('pending') || eventLower.includes('processing')) {
-      return 'pending';
-    }
-    return 'info';
+  // FIX: Removed '?.' from details and meta because interface says they are required
+  getPaymentNote(webhook: Webhook): string {
+    return webhook.details.meta.note || 'No note available';
+  }
+
+  getPaymentOption(webhook: Webhook): string {
+    return webhook.details.meta.payment_option || 'N/A';
+  }
+
+  getPaymentAmount(webhook: Webhook): number {
+    return webhook.details.meta.pwt_item_amount || 0;
   }
 
   formatDate(dateString: string): string {
@@ -119,15 +141,16 @@ export class NotificationsComponent implements OnInit {
     });
   }
 
-  getEventIcon(event: string): string {
-    const eventLower = event.toLowerCase();
-    if (eventLower.includes('payment') || eventLower.includes('transaction')) {
-      return 'payment';
-    } else if (eventLower.includes('mandate')) {
-      return 'mandate';
-    } else if (eventLower.includes('account')) {
-      return 'account';
+  // FIX: Updated signature to accept undefined to satisfy strict HTML templates
+  getStatusClass(status: string | undefined): string {
+    const statusLower = status?.toLowerCase() || '';
+    if (statusLower.includes('success') || statusLower.includes('complete')) {
+      return 'success';
+    } else if (statusLower.includes('error') || statusLower.includes('fail')) {
+      return 'error';
+    } else if (statusLower.includes('pending') || statusLower.includes('processing')) {
+      return 'pending';
     }
-    return 'notification';
+    return 'info';
   }
 }
