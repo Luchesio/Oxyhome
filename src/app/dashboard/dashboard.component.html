@@ -108,11 +108,11 @@
       </div>
     </div>
 
-    <!-- Active Mandates Section -->
-    <div class="mandates-section">
+    <!-- Recent Notifications Section -->
+    <div class="notifications-section">
       <div class="section-header">
-        <h2 class="section-title">Active Mandates</h2>
-        <button class="btn-view-all" (click)="goToMandates()">
+        <h2 class="section-title">Recent Notifications</h2>
+        <button class="btn-view-all" (click)="goToNotifications()">
           View All
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -124,9 +124,9 @@
         </button>
       </div>
 
-      <div class="mandates-content">
+      <div class="notifications-content">
         <!-- Loading State -->
-        <div class="loading-container" *ngIf="isLoadingMandates">
+        <div class="loading-container" *ngIf="isLoadingNotifications">
           <div class="loading-spinner">
             <svg class="spinner" viewBox="0 0 24 24">
               <circle
@@ -138,14 +138,14 @@
                 fill="none"
               />
             </svg>
-            <p class="loading-text">Loading mandates...</p>
+            <p class="loading-text">Loading notifications...</p>
           </div>
         </div>
 
         <!-- Error State -->
         <div
           class="error-container"
-          *ngIf="!isLoadingMandates && mandatesError"
+          *ngIf="!isLoadingNotifications && notificationsError"
         >
           <div class="error-icon">
             <svg
@@ -158,8 +158,8 @@
               />
             </svg>
           </div>
-          <p class="error-message">{{ mandatesError }}</p>
-          <button class="btn-retry" (click)="refreshMandates()">
+          <p class="error-message">{{ notificationsError }}</p>
+          <button class="btn-retry" (click)="refreshNotifications()">
             Try Again
           </button>
         </div>
@@ -168,9 +168,9 @@
         <div
           class="empty-container"
           *ngIf="
-            !isLoadingMandates &&
-            !mandatesError &&
-            displayedMandates.length === 0
+            !isLoadingNotifications &&
+            !notificationsError &&
+            displayedNotifications.length === 0
           "
         >
           <div class="empty-icon">
@@ -180,70 +180,92 @@
               fill="currentColor"
             >
               <path
-                d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"
+                d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
               />
             </svg>
           </div>
-          <p class="empty-message">No active mandates</p>
+          <p class="empty-message">No notifications yet</p>
           <p class="empty-subtitle">
-            You don't have any active payment mandates at the moment
+            You'll see payment notifications here when they arrive
           </p>
         </div>
 
-        <!-- Mandates Grid (Limited to 2) -->
+        <!-- Notifications List (Limited to 2) -->
         <div
-          class="mandates-grid"
+          class="notifications-grid"
           *ngIf="
-            !isLoadingMandates && !mandatesError && displayedMandates.length > 0
+            !isLoadingNotifications &&
+            !notificationsError &&
+            displayedNotifications.length > 0
           "
         >
-          <div class="mandate-card" *ngFor="let account of displayedMandates">
-            <div class="mandate-header">
-              <div class="bank-icon">
+          <div
+            class="notification-card"
+            *ngFor="let notification of displayedNotifications"
+          >
+            <div class="notification-header">
+              <div class="notification-icon">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                   fill="currentColor"
                 >
                   <path
-                    d="M4 10v7h3v-7H4zm6 0v7h3v-7h-3zM2 22h19v-3H2v3zm14-12v7h3v-7h-3zm-4.5-9L2 6v2h19V6l-9.5-5z"
+                    d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"
                   />
                 </svg>
               </div>
               <div
                 class="status-badge"
-                [ngClass]="getStatusClass(account.extended_data.mandate_status)"
+                [ngClass]="getStatusClass(notification.details?.status)"
               >
-                {{ account.extended_data.mandate_status }}
+                {{ notification.details?.status || "Unknown" }}
               </div>
             </div>
 
-            <div class="mandate-body">
-              <div class="info-group">
-                <span class="info-label">Account Name</span>
-                <span class="info-value">{{ account.account_name }}</span>
-              </div>
-
-              <div class="info-group">
-                <span class="info-label">Account Number</span>
-                <span class="info-value highlight">{{
-                  account.account_number
+            <div class="notification-body">
+              <div class="info-group" *ngIf="notification.details?.meta?.note">
+                <span class="info-label">Note</span>
+                <span class="info-value">{{
+                  getPaymentNote(notification)
                 }}</span>
               </div>
 
+              <div
+                class="info-group"
+                *ngIf="notification.details?.meta?.payment_option"
+              >
+                <span class="info-label">Payment Option</span>
+                <span class="info-value">{{
+                  getPaymentOption(notification)
+                }}</span>
+              </div>
+
+              <div
+                class="info-group"
+                *ngIf="notification.details?.meta?.pwt_item_amount"
+              >
+                <span class="info-label">Amount</span>
+                <span class="info-value highlight">
+                  ₦{{ getPaymentAmount(notification) | number: "1.2-2" }}
+                </span>
+              </div>
+
               <div class="info-group">
-                <span class="info-label">Bank Name</span>
-                <span class="info-value">{{ account.bank_name }}</span>
+                <span class="info-label">Time</span>
+                <span class="info-value time">{{
+                  formatNotificationDate(notification.received_at)
+                }}</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Show count if more mandates exist -->
-        <div class="more-mandates" *ngIf="remainingMandatesCount > 0">
+        <!-- Show count if more notifications exist -->
+        <div class="more-notifications" *ngIf="remainingNotificationsCount > 0">
           <p class="more-text">
-            + {{ remainingMandatesCount }} more mandate{{
-              remainingMandatesCount > 1 ? "s" : ""
+            + {{ remainingNotificationsCount }} more notification{{
+              remainingNotificationsCount > 1 ? "s" : ""
             }}
           </p>
         </div>
@@ -366,7 +388,7 @@
     </div>
 
     <div class="modal-body">
-      <!-- <div class="message-section">
+      <div class="message-section">
         <div class="message-icon">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -377,7 +399,7 @@
           </svg>
         </div>
         <p class="message-text">{{ bankResponseMessage }}</p>
-      </div> -->
+      </div>
 
       <div class="account-details-section" *ngIf="bankResponseData">
         <h3 class="section-title">Account Details</h3>

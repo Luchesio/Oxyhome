@@ -42,12 +42,12 @@ export class SidebarComponent {
       label: 'Profile',
       icon: 'assets/profile.svg',
       route: '/profile'
-    },
-    {
-      label: 'Mandates',
-      icon: 'assets/myinstallment.svg',
-      route: '/mandates'
     }
+    // {
+    //   label: 'Mandates',
+    //   icon: 'assets/myinstallment.svg',
+    //   route: '/mandates'
+    // }
   ];
 
   toggleMenu(): void {
