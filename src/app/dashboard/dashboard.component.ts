@@ -34,39 +34,29 @@ export interface Installment {
   status: 'Due' | 'Paid' | 'Overdue';
 }
 
-interface AccountMandate {
-  account_number: string;
-  account_name: string;
-  bank_name: string;
-  bank_code: string;
-  extended_data: {
-    mandate_status: string;
-  }
-}
-
-interface MandateResponse {
-  status_code: number;
-  response: {
-    status: string;
-    message: string;
-    data: {
-      provider_response: {
-        accounts: AccountMandate[];
-        reference: string;
-        meta: {
-          records: number;
-          page: number;
-          pages: number;
-          page_size: number;
-        }
-      }
-    }
-  }
-}
-
 interface Bank {
   name: string;
   code: string;
+}
+
+interface Webhook {
+  _id: string;
+  request_ref: string;
+  request_type: string;
+  details: {
+    amount?: string;
+    transaction_ref?: string;
+    status?: string;
+    customer_firstname?: string;
+    customer_surname?: string;
+    meta?: {
+      note?: string;
+      payment_option?: string;
+      pwt_item_amount?: number;
+      [key: string]: any;
+    };
+  };
+  received_at: string;
 }
 
 interface AccountLookupResponse {
@@ -103,7 +93,6 @@ interface AccountLookupResponse {
 export class DashboardComponent implements OnInit {
   // private apiUrl = 'http://localhost:8000';
 
-
   private apiUrl = environment.apiUrl;
   
   walletBalance: number = 0.00;
@@ -123,12 +112,12 @@ export class DashboardComponent implements OnInit {
     fullAccountNumber: ''
   };
 
-  // Mandates properties
-  allMandates: AccountMandate[] = [];
-  displayedMandates: AccountMandate[] = [];
-  isLoadingMandates: boolean = false;
-  mandatesError: string = '';
-  remainingMandatesCount: number = 0;
+  // Notifications properties (replacing mandates)
+  allNotifications: any[] = [];
+  displayedNotifications: any[] = [];
+  isLoadingNotifications: boolean = false;
+  notificationsError: string = '';
+  remainingNotificationsCount: number = 0;
 
   // Account linking notification
   hasLinkedAccount: boolean = false;
@@ -252,8 +241,8 @@ export class DashboardComponent implements OnInit {
           phone_number: response.phone_number
         };
         
-        // Fetch mandates after user profile is loaded
-        this.fetchMandates();
+        // Fetch notifications after user profile is loaded
+        this.fetchNotifications();
       },
       error => {
         console.error('Error fetching user profile', error);
@@ -356,71 +345,86 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  async fetchMandates(): Promise<void> {
-    if (!this.userProfile.phone_number) {
+  async fetchNotifications(): Promise<void> {
+    const token = localStorage.getItem('access_token');
+    
+    if (!token) {
       return;
     }
 
-    this.isLoadingMandates = true;
-    this.mandatesError = '';
+    this.isLoadingNotifications = true;
+    this.notificationsError = '';
 
-    // Generate random refs
-    const requestRef = this.generateRandomDigits(9);
-    const transactionRef = this.generateRandomDigits(12);
-
-    // Prepare payload
-    const payload = {
-      request_ref: requestRef,
-      request_type: "Get Accounts Max",
-      transaction: {
-        mock_mode: "Inspect",
-        transaction_ref: transactionRef,
-        transaction_desc: "Check active mandates",
-        transaction_ref_parent: null,
-        amount: 0,
-        customer: {
-          customer_ref: this.userProfile.phone_number,
-          firstname: this.userProfile.first_name || '',
-          surname: this.userProfile.last_name || '',
-          email: this.userProfile.email || '',
-          mobile_no: this.userProfile.phone_number
-        },
-        meta: {
-          biller_code: "000734"
-        },
-        details: {}
-      }
-    };
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
 
     try {
-      const response = await this.http.post<MandateResponse>(
-        `${this.apiUrl}/api/mandate`, 
-        payload
+      const response = await this.http.get<any>(
+        `${this.apiUrl}/auth/webhooks`, 
+        { headers }
       ).toPromise();
       
-      if (response && response.response && response.response.data) {
-        this.allMandates = response.response.data.provider_response.accounts || [];
-        // Display only first 2 mandates
-        this.displayedMandates = this.allMandates.slice(0, 2);
-        this.remainingMandatesCount = Math.max(0, this.allMandates.length - 2);
+      if (response && response.webhooks) {
+        this.allNotifications = response.webhooks || [];
+        // Display only first 2 notifications
+        this.displayedNotifications = this.allNotifications.slice(0, 2);
+        this.remainingNotificationsCount = Math.max(0, this.allNotifications.length - 2);
       } else {
-        this.mandatesError = 'No mandate data received';
+        this.notificationsError = 'No notification data received';
       }
     } catch (error: any) {
-      this.toastr.error('Error fetching mandates');
-      console.error('Error fetching mandates:', error);
-      this.mandatesError = 'Failed to load mandates';
+      this.toastr.error('Error fetching notifications');
+      console.error('Error fetching notifications:', error);
+      this.notificationsError = 'Failed to load notifications';
     } finally {
-      this.isLoadingMandates = false;
+      this.isLoadingNotifications = false;
     }
   }
 
-  refreshMandates(): void {
-    this.fetchMandates();
+  refreshNotifications(): void {
+    this.fetchNotifications();
+  }
+
+  getPaymentNote(notification: any): string {
+    return notification.details?.meta?.note || 'Payment notification';
+  }
+
+  getPaymentOption(notification: any): string {
+    return notification.details?.meta?.payment_option || 'N/A';
+  }
+
+  getPaymentAmount(notification: any): number {
+    const amount = notification.details?.meta?.pwt_item_amount || 0;
+    return amount / 100; // Convert kobo to naira
+  }
+
+  formatNotificationDate(dateString: string): string {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   }
 
   getStatusClass(status: string): string {
-    return status.toLowerCase() === 'active' ? 'active' : 'inactive';
+    const statusLower = status?.toLowerCase() || '';
+    if (statusLower.includes('success') || statusLower.includes('complete')) {
+      return 'success';
+    } else if (statusLower.includes('error') || statusLower.includes('fail')) {
+      return 'error';
+    } else if (statusLower.includes('pending') || statusLower.includes('processing')) {
+      return 'pending';
+    }
+    return 'info';
   }
 
   goToNotifications(): void {
@@ -613,8 +617,8 @@ export class DashboardComponent implements OnInit {
         // Reload bank account to ensure UI is in sync with database
         this.loadPrimaryBankAccount();
         
-        // Optionally refresh mandates or other data
-        this.fetchMandates();
+        // Optionally refresh notifications
+        // this.fetchNotifications();
       } else {
         this.toastr.error('Failed to link bank account');
       }
